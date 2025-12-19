@@ -46,7 +46,9 @@ function App() {
       checked: 'false',
       creationDate: 'дата створення',
     };
+
     const response = await axios.put(`todos/${id}`, payload);
+
     setData((prev) =>
       prev.map((item) => {
         if (item.id === id) {
