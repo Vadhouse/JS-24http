@@ -1,62 +1,34 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import './App.css';
 import Loader from './components/Loader/Loader';
-import { useFetch } from './hooks/useFetch';
+// import { useFetch } from './hooks/useFetch';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
+import { getTodosList, addTodo } from './api/api';
 
 axios.defaults.baseURL = 'http://localhost:3030/';
 
 function App() {
-  const [data, setData] = useState([]);
-  const [isPostLoading, setIsPostLoading] = useState(false);
-  const { data: todos, isLoading, error } = useFetch('todos');
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: ['todoList'],
+    queryFn: getTodosList,
+  });
 
-  useEffect(() => {
-    setData(todos);
-  }, [todos]);
+  const { mutateAsync } = useMutation({
+    mutationFn: (payload) => addTodo(payload),
+  });
 
-  const addTodo = async () => {
-    setIsPostLoading(true);
+  const addNewTodo = async () => {
     const payload = {
       title: 'todo 3',
       description: 'lorem ipsum dolor sit amet, consectetur adip',
       checked: 'false',
       creationDate: 'дата створення',
     };
-    const response = await axios.post('todos', payload);
-    setData((prev) => [...prev, response.data]);
-    setIsPostLoading(false);
-  };
-
-  console.log(todos);
-
-  if (error) {
-    return <div>something went wrong {error}</div>;
-  }
-
-  const deleteTodo = async (id) => {
-    await axios.delete(`todos/${id}`);
-    setData((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const editTodo = async (id) => {
-    const payload = {
-      title: 'todo 4',
-      description: 'lorem ipsum dolor sit amet, consectetur adip',
-      checked: 'false',
-      creationDate: 'дата створення',
-    };
-
-    const response = await axios.put(`todos/${id}`, payload);
-
-    setData((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          return response.data;
-        }
-        return item;
-      })
-    );
+    try {
+      await mutateAsync(payload);
+      await refetch();
+    } catch (error) {}
   };
 
   return (
@@ -66,23 +38,21 @@ function App() {
       </header>
       <main>
         <ul>
-          {isLoading ? (
-            <Loader loading={isLoading} />
+          {isFetching ? (
+            <Loader loading={isFetching} />
           ) : (
             data?.map((todo) => (
               <li key={todo.id} style={{ display: 'flex', gap: '10px' }}>
                 <p>
                   {todo.title} {todo.creationDate}
                 </p>
-                <button onClick={() => deleteTodo(todo.id)}>Delete</button>
-                <button onClick={() => editTodo(todo.id)}>зберегти</button>
+                <button>Delete</button>
+                <button>зберегти</button>
               </li>
             ))
           )}
         </ul>
-        <button disabled={isPostLoading} onClick={addTodo}>
-          {isPostLoading ? 'loading...' : 'додати'}
-        </button>
+        <button onClick={addNewTodo}>{'додати'}</button>
       </main>
     </div>
   );
