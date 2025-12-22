@@ -1,11 +1,10 @@
 {
   "todos": [
     {
-      "id": 1,
       "title": "todo 1",
       "description": "lorem ipsum dolor sit amet, consectetur adip",
       "checked": "false",
-      "creationDate": "дата створення"
+      "id": 1
     },
     {
       "id": 2,
@@ -13,13 +12,6 @@
       "description": "lorem ipsum dolor sit amet, consectetur adip",
       "checked": "false",
       "creationDate": "дата створення"
-    },
-    {
-      "title": "todo 3",
-      "description": "lorem ipsum dolor sit amet, consectetur adip",
-      "checked": "false",
-      "creationDate": "дата створення",
-      "id": 3
     }
   ]
 }
